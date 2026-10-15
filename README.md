@@ -1,54 +1,41 @@
-# TestingStudio Web — Sprint 1
+# TestingStudio Web — CAD0001
 
-Aplicação Web em Streamlit para auditar funcionalmente o programa CAD0001 com
-Particionamento em Classes de Equivalência (PCE) e Análise de Valor Limite
-(AVL), usando ε = 0,01.
+Aplicação Streamlit para estudar o programa `cad0001_item_calculo.txt` em três abas:
 
-A integração utiliza o modelo Gemini 3.8 Flash.
+1. **Caixa-Preta:** PCE, AVL, gráfico de fronteira e relatório Gemini.
+2. **Caixa-Branca:** GFC visual por função e V(G) de McCabe calculado a partir de nós e arestas.
+3. **Fluxo de Dados e Mutação:** pares Def-Uso por função e execução de cinco mutantes da função de cálculo com escore de mutação.
 
-## Requisitos
+O código-fonte aparece em uma caixa com rolagem. Cada aba permite baixar um PDF com os dados calculados e o texto do Gemini após a geração do seu relatório.
 
-- Python 3.10 ou superior
-- Uma chave da Gemini API obtida no Google AI Studio
+## Instalação
 
-## Instalação e execução
+Use Python 3.10 ou superior:
 
-Instale as dependências:
+```powershell
+pip install -r requirements.txt
+```
 
-    pip install -r requirements.txt
+Copie `.env.example` para `.env` e preencha `GEMINI_API_KEY`. O modelo padrão é `gemini-2.5-flash`; opcionalmente, defina `GEMINI_MODEL` no `.env` para usar outro modelo disponível em sua conta.
 
-Copie .env.example para .env e informe a chave:
+```powershell
+streamlit run app.py
+```
 
-    GEMINI_API_KEY=sua_chave_aqui
+As métricas estruturais e o resultado da mutação são calculados localmente; a chave Gemini é necessária para os relatórios em linguagem natural e seus PDFs.
 
-Em seguida, inicie a aplicação:
+## Critérios da análise
 
-    streamlit run app.py
+- Cada função do fonte forma um GFC conectado com entrada e saída únicas. Os `IF` criam os dois ramos; `RETURN` termina no nó de saída. Para cada função, `V(G) = E - N + 2` e é conferido por `decisões + 1`.
+- Os pares Def-Uso são intrafunção e mostram definições que alcançam o uso sem redefinição no caminho. Parâmetros e campos de registro recebidos pela função são marcados como origem de entrada; operações SQL definem `sqlca.sqlcode`. A análise não executa o banco.
+- O motor de mutação verifica a estrutura da função `cad0001_calcula_valor` antes de executá-la com `Decimal`. A suíte fixa cobre cada parâmetro `NULL`, cálculo comum e valor negativo. Os cinco mutantes trocam cada valor padrão de `NULL` de zero para um, a multiplicação por soma e a soma final por subtração.
+- `MS = mortos / (mortos + sobreviventes) × 100` é exato para esses cinco mutantes e essa suíte. O resultado não afirma cobertura de todos os mutantes possíveis ou execução das rotinas Informix/Logix.
+- O guia didático espera erro `-1` para negativos; o fonte entregue não contém essa regra. O relatório deve registrar essa divergência.
 
-O Streamlit exibirá o endereço local, normalmente http://localhost:8501.
+## Verificação
 
-## Uso
+```powershell
+python -m unittest discover -s tests -v
+```
 
-1. Confirme na barra lateral que a chave foi carregada.
-2. Verifique o código de cad0001_item_calculo.txt exibido na página.
-3. Selecione Executar Auditoria de Caixa-Preta (PCE & AVL).
-4. Consulte a aba de relatório para as classes de equivalência, os limites e os
-   casos de teste sugeridos.
-5. Consulte o dashboard para os pontos Off (-0,01), On (0,00), Interior
-   (100,00) e Exterior (-100,00).
-
-Se a Gemini estiver temporariamente sobrecarregada, a aplicação repetirá a
-requisição automaticamente até quatro vezes, com espera progressiva. Se o
-serviço continuar indisponível, aguarde alguns instantes e tente novamente.
-
-## Observação sobre a regra de negócio
-
-O guia de laboratório considera números negativos inválidos e cita retorno -1.
-O arquivo CAD0001 entregue, porém, converte valores nulos para zero e não contém
-essa validação de negativos. A aplicação usa o arquivo real como objeto de
-estudo e orienta o Gemini a registrar essa divergência no relatório.
-
-## Segurança
-
-O arquivo .env é ignorado pelo Git. Nunca publique sua chave de API em código,
-commits ou capturas de tela.
+O arquivo `.env` é ignorado pelo Git. Não publique a chave de API.
