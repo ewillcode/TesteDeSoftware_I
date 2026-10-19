@@ -47,13 +47,14 @@ def main() -> None:
             mutation["score"] = str(mutation["score"])
         except (OSError, UnicodeDecodeError, ValueError, ArithmeticError) as error:
             mutation_error = str(error)
+    # Escape Unicode so Windows consoles using cp1252 can emit this JSON safely.
     print(json.dumps({
         "tests_run": result.testsRun,
         "outcomes": result.outcomes,
         "test_log": log.getvalue() + captured.getvalue(),
         "mutation": mutation,
         "mutation_error": mutation_error,
-    }, ensure_ascii=False))
+    }, ensure_ascii=True))
 
 
 if __name__ == "__main__":
