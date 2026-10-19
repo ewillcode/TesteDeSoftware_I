@@ -1,10 +1,11 @@
 # TestingStudio Web — CAD0001
 
-Aplicação Streamlit para estudar o programa `cad0001_item_calculo.txt` em três abas:
+Aplicação Streamlit para estudar o programa `cad0001_item_calculo.txt` em quatro abas:
 
 1. **Caixa-Preta:** PCE, AVL, gráfico de fronteira e relatório Gemini.
 2. **Caixa-Branca:** GFC visual por função e V(G) de McCabe calculado a partir de nós e arestas.
 3. **Fluxo de Dados e Mutação:** pares Def-Uso por função e execução de cinco mutantes da função de cálculo com escore de mutação.
+4. **Pitch e Validação:** matriz bidirecional entre requisitos e casos de teste, evidências, roteiro de apresentação e PDF.
 
 O código-fonte aparece em uma caixa com rolagem. Cada aba permite baixar um PDF com os dados calculados e o texto do Gemini após a geração do seu relatório.
 
@@ -22,7 +23,20 @@ Copie `.env.example` para `.env` e preencha `GEMINI_API_KEY`. O modelo padrão �
 streamlit run app.py
 ```
 
-As métricas estruturais e o resultado da mutação são calculados localmente; a chave Gemini é necessária para os relatórios em linguagem natural e seus PDFs.
+As métricas estruturais e o resultado da mutação são calculados localmente. A chave Gemini é necessária para os relatórios e PDFs das três primeiras abas; o roteiro factual e o PDF da quarta aba funcionam sem ela.
+
+## Sprint 4: Pitch e Validação
+
+Na quarta aba, selecione **Executar validação** para rodar a suíte local e os cinco casos da mutação. Registre na tabela as verificações visuais e da API Gemini como pendentes, aprovadas ou reprovadas; uma conclusão exige observação. A matriz responde:
+
+- **Tudo o que foi pedido foi coberto?** Só responde `Sim` quando todos os requisitos têm verificações aprovadas e não há lacunas conhecidas.
+- **Tudo o que foi testado foi pedido?** Verifica se todos os casos executados estão ligados a algum requisito. Um teste novo sem vínculo aparece como extra.
+
+Depois, selecione **Gerar roteiro do pitch**. O roteiro factual usa o retrato da matriz; quando Gemini está disponível, sua versão aparece separadamente para revisão. O PDF reúne respostas, requisitos, casos, evidências e roteiro. Evidências manuais e resultados da rodada ficam nesta sessão e são invalidados quando o código ou os testes mudam.
+
+Para registrar a inspeção do PDF da própria Sprint 4 (M07), gere e confira um primeiro PDF, salve a observação manual e gere novamente o roteiro final. A aba avisa quando uma evidência nova torna o roteiro anterior desatualizado.
+
+A matriz registra como lacuna o ε fixo em `0,01`, pois o kickoff pede seu cálculo a partir da escala decimal. Ela mantém a divergência dos negativos como achado sobre o programa CAD0001, sem tratá-la como uma regra implementada no fonte.
 
 ## Critérios da análise
 

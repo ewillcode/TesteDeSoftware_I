@@ -17,6 +17,7 @@ from google import genai
 from mutation import run_mutation
 from pdf_export import create_pdf
 from structural import build_all_graphs, def_use_pairs
+from validation_ui import render_validation_tab
 
 BASE_DIR = Path(__file__).resolve().parent
 SOURCE_FILE = BASE_DIR / "cad0001_item_calculo.txt"
@@ -133,7 +134,7 @@ def pdf_download(key: str, title: str, sections: list[tuple[str, list[dict]]]) -
 
 st.set_page_config(page_title="TestingStudio Web — CAD0001", page_icon="🧪", layout="wide")
 st.title("🧪 TestingStudio Web — Auditoria do CAD0001")
-st.caption("Teste de Software I | Caixa-Preta, Caixa-Branca, Fluxo de Dados e Mutação")
+st.caption("Teste de Software I | Caixa-Preta, Caixa-Branca, Fluxo de Dados, Mutação e Validação")
 api_key = os.getenv("GEMINI_API_KEY", "").strip()
 with st.sidebar:
     st.header("Autenticação")
@@ -154,8 +155,8 @@ if st.session_state.get("source_hash") != source_hash:
 
 st.subheader("Código-fonte analisado")
 st.code(source_code, language="text", line_numbers=True, height=280)
-tab_blackbox, tab_structural, tab_dataflow = st.tabs([
-    "1 · Caixa-Preta (PCE e AVL)", "2 · Caixa-Branca (GFC e V(G))", "3 · Fluxo de Dados e Mutação",
+tab_blackbox, tab_structural, tab_dataflow, tab_validation = st.tabs([
+    "1 · Caixa-Preta (PCE e AVL)", "2 · Caixa-Branca (GFC e V(G))", "3 · Fluxo de Dados e Mutação", "4 · Pitch e Validação",
 ])
 
 with tab_blackbox:
@@ -230,5 +231,8 @@ with tab_dataflow:
             pair_rows = [{"Função": pair["function"], "Variável": pair["variable"], "Definição": f"{pair['definition']} (L{pair['definition_line'] or 'entrada'})", "Uso": f"{pair['use']} (L{pair['use_line']})", "Tipo": pair["kind"], "Origem": pair["origin"]} for pair in all_pairs]
             summary = [{"Mortos": mutation["killed"], "Sobreviventes": mutation["survived"], "MS": f"{mutation['score']:.0f}%"}]
             pdf_download("dataflow", "Fluxo de Dados e Mutação", [("Pares Def-Uso", pair_rows), ("Suíte de teste", cases), ("Mutantes", mutants), ("Escore", summary)])
+
+with tab_validation:
+    render_validation_tab(BASE_DIR, source_code, api_key, generate_report)
 
 st.markdown('<hr><p style="text-align:center;color:#6b7280;font-size:0.85rem;">© 2026 Eduardo Will — Todos os direitos reservados.</p>', unsafe_allow_html=True)

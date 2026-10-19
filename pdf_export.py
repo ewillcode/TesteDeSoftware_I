@@ -29,7 +29,7 @@ def _pdf_string(value: str) -> bytes:
     return _printable(value).replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)").encode("cp1252")
 
 
-def _make_lines(title: str, sections: list[tuple[str, list[dict[str, object]]]], report: str) -> list[tuple[str, bool]]:
+def _make_lines(title: str, sections: list[tuple[str, list[dict[str, object]]]], report: str, report_heading: str) -> list[tuple[str, bool]]:
     lines: list[tuple[str, bool]] = [(title, True), ("CAD0001 | TestingStudio Web", False), ("", False)]
     for section_title, rows in sections:
         lines.extend([("", False), (section_title, True)])
@@ -40,7 +40,7 @@ def _make_lines(title: str, sections: list[tuple[str, list[dict[str, object]]]],
             value = "  |  ".join(f"{key}: {value}" for key, value in row.items())
             for part in textwrap.wrap(_printable(f"{number}. {value}"), width=105, break_long_words=True, break_on_hyphens=False):
                 lines.append((part, False))
-    lines.extend([("", False), ("Interpretação do Gemini", True)])
+    lines.extend([("", False), (report_heading, True)])
     for raw in report.splitlines():
         line = raw.strip()
         if re.fullmatch(r"\|?[\s:|-]+\|?", line):
@@ -57,9 +57,9 @@ def _make_lines(title: str, sections: list[tuple[str, list[dict[str, object]]]],
     return lines
 
 
-def create_pdf(title: str, sections: list[tuple[str, list[dict[str, object]]]], report: str) -> bytes:
+def create_pdf(title: str, sections: list[tuple[str, list[dict[str, object]]]], report: str, report_heading: str = "Interpretação do Gemini") -> bytes:
     """Create landscape A4 pages with all tabulated data and Gemini text."""
-    lines = _make_lines(title, sections, report)
+    lines = _make_lines(title, sections, report, report_heading)
     page_streams: list[bytes] = []
     commands: list[bytes] = []
     y = TOP
