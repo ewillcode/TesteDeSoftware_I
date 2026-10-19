@@ -24,7 +24,7 @@ SOURCE_FILE = BASE_DIR / "cad0001_item_calculo.txt"
 MAX_GENERATION_ATTEMPTS = 4
 RETRY_DELAYS_SECONDS = (2, 4, 8)
 load_dotenv(BASE_DIR / ".env")
-MODEL_NAME = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL_NAME = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
 
 def build_audit_prompt(source: str) -> str:
@@ -138,7 +138,10 @@ st.caption("Teste de Software I | Caixa-Preta, Caixa-Branca, Fluxo de Dados, Mut
 api_key = os.getenv("GEMINI_API_KEY", "").strip()
 with st.sidebar:
     st.header("Autenticação")
-    st.success("Chave Gemini configurada pelo arquivo .env.") if api_key else st.error("GEMINI_API_KEY não foi encontrada no arquivo .env.")
+    if api_key:
+        st.success("Chave Gemini configurada pelo arquivo .env.")
+    else:
+        st.error("GEMINI_API_KEY não foi encontrada no arquivo .env.")
     st.caption("A chave nunca é exibida na interface.")
 
 try:
@@ -163,7 +166,10 @@ with tab_blackbox:
     run_gemini_button("Executar Auditoria de Caixa-Preta", "blackbox", build_audit_prompt(source_code), api_key)
     report_tab, boundary_tab = st.tabs(["Relatório PCE e AVL", "Gráfico de Fronteira"])
     with report_tab:
-        st.markdown(st.session_state.report_blackbox) if st.session_state.get("report_blackbox") else st.info("Execute a auditoria para gerar o relatório de PCE e AVL.")
+        if st.session_state.get("report_blackbox"):
+            st.markdown(st.session_state.report_blackbox)
+        else:
+            st.info("Execute a auditoria para gerar o relatório de PCE e AVL.")
     with boundary_tab:
         st.subheader("Pontos de fronteira da AVL")
         st.caption("ε = 0,01 para valores monetários decimais.")

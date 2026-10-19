@@ -17,7 +17,7 @@ Use Python 3.10 ou superior:
 pip install -r requirements.txt
 ```
 
-Copie `.env.example` para `.env` e preencha `GEMINI_API_KEY`. O modelo padrão é `gemini-2.5-flash`; opcionalmente, defina `GEMINI_MODEL` no `.env` para usar outro modelo disponível em sua conta.
+Copie `.env.example` para `.env` e preencha `GEMINI_API_KEY`. O modelo padrão é `gemini-3.8-flash`; opcionalmente, defina `GEMINI_MODEL` no `.env` para usar outro modelo disponível em sua conta.
 
 ```powershell
 streamlit run app.py
